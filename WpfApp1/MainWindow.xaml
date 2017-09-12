@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="2048" ResizeMode="NoResize" Height="540" Width="410" Background="#FEFEEE">
+        Title="2048"  Height="540" Width="420" Background="#FEFEEE">
 
-    <Grid x:Name="mainGrid" Height="400" Margin="0,6,6,6" 
+    <Grid x:Name="mainGrid" Height="400" Margin="0,3,3,3" 
           HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="400" ShowGridLines="False">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>

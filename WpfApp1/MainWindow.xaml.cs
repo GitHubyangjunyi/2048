@@ -390,7 +390,7 @@ namespace WpfApp1
                 mainGrid.Height = n * 100;
                 mainGrid.Width = n * 100;
                 this.Height = mainGrid.Height + 145;
-                this.Width = mainGrid.Width + 15;
+                this.Width = mainGrid.Width + 20;
                 Grid.SetRowSpan(fm1, n);
                 Grid.SetColumnSpan(fm1, n);
                 grids = new long[n, n];
