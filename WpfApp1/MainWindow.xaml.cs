@@ -66,6 +66,7 @@ namespace WpfApp1
                         record = score;
                         lbl_record.Content = record.ToString();
                     }
+                    sld1.IsEnabled = true;
                     e.Handled = true;
                     init();
                     break;
