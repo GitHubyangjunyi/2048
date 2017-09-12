@@ -35,29 +35,41 @@ namespace WpfApp1
         private void OnFormPKD(object sender, KeyEventArgs e)
         {
             if (gameStatus)
-                switch (e.Key)
-                {
-                    case Key.Down:
-                        down();
-                        genRand();
-                        e.Handled = true;
-                        break;
-                    case Key.Up:
-                        up();
-                        genRand();
-                        e.Handled = true;
-                        break;
-                    case Key.Left:
-                        left();
-                        genRand();
-                        e.Handled = true;
-                        break;
-                    case Key.Right:
-                        right();
-                        genRand();
-                        e.Handled = true;
-                        break;
-                }
+                if (sld1.IsEnabled)
+                    sld1.IsEnabled = false;
+            switch (e.Key)
+            {
+                case Key.Down:
+                    down();
+                    genRand();
+                    e.Handled = true;
+                    break;
+                case Key.Up:
+                    up();
+                    genRand();
+                    e.Handled = true;
+                    break;
+                case Key.Left:
+                    left();
+                    genRand();
+                    e.Handled = true;
+                    break;
+                case Key.Right:
+                    right();
+                    genRand();
+                    e.Handled = true;
+                    break;
+                case Key.Escape:
+                    gameStatus = false;
+                    if (score > record)
+                    {
+                        record = score;
+                        lbl_record.Content = record.ToString();
+                    }
+                    e.Handled = true;
+                    init();
+                    break;
+            }
         }
 
 
@@ -107,6 +119,7 @@ namespace WpfApp1
                 lbl_record.Content = record.ToString();
             }
             topLabel.Visibility = Visibility.Visible;
+            sld1.IsEnabled = true;
             var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
             timer.Start();
             timer.Tick += (sender, args) =>
@@ -115,6 +128,7 @@ namespace WpfApp1
                 init();
             };
         }
+
         private void init()
         {
             topLabel.Visibility = Visibility.Hidden;
@@ -374,8 +388,10 @@ namespace WpfApp1
             {
                 mainGrid.Height = n * 100;
                 mainGrid.Width = n * 100;
-                this.Height = mainGrid.Height + 140;
-                this.Width = mainGrid.Width + 8;
+                this.Height = mainGrid.Height + 145;
+                this.Width = mainGrid.Width + 15;
+                Grid.SetRowSpan(fm1, n);
+                Grid.SetColumnSpan(fm1, n);
                 grids = new long[n, n];
                 lbls = new Label[n, n];
                 if (n > oldSize)
