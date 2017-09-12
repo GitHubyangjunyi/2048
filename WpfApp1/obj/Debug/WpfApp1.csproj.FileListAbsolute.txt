@@ -1,0 +1,30 @@
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\bin\Debug\WpfApp1.exe.config
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\bin\Debug\WpfApp1.exe
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\bin\Debug\WpfApp1.pdb
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\WpfApp1.csprojResolveAssemblyReference.cache
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\MainWindow.g.cs
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\App.g.cs
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\WpfApp1_MarkupCompile.cache
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\WpfApp1_MarkupCompile.lref
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\MainWindow.baml
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\WpfApp1.g.resources
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\WpfApp1.Properties.Resources.resources
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\WpfApp1.csproj.GenerateResource.Cache
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\WpfApp1.csproj.CoreCompileInputs.cache
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\WpfApp1.exe
+C:\Users\seren\Documents\Visual Studio 2017\Projects\WpfApp1\WpfApp1\obj\Debug\WpfApp1.pdb
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\WpfApp1.csprojResolveAssemblyReference.cache
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\MainWindow.g.cs
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\App.g.cs
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\MainWindow.baml
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\WpfApp1.Properties.Resources.resources
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\WpfApp1.csproj.GenerateResource.Cache
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\WpfApp1.csproj.CoreCompileInputs.cache
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\2048_MarkupCompile.cache
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\2048_MarkupCompile.lref
+C:\OneDrive\projects\windows\2048\WpfApp1\bin\Debug\2048.exe.config
+C:\OneDrive\projects\windows\2048\WpfApp1\bin\Debug\2048.exe
+C:\OneDrive\projects\windows\2048\WpfApp1\bin\Debug\2048.pdb
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\2048.g.resources
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\2048.exe
+C:\OneDrive\projects\windows\2048\WpfApp1\obj\Debug\2048.pdb
