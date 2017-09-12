@@ -26,10 +26,11 @@ namespace WpfApp1
         {
             InitializeComponent();
             drawLB();
-            DataContext = this;
             this.PreviewKeyDown += new KeyEventHandler(OnFormPKD);
             init();
         }
+
+
 
         private void OnFormPKD(object sender, KeyEventArgs e)
         {
@@ -365,6 +366,35 @@ namespace WpfApp1
                 }
         }
 
+        private void sld1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            n = (int)sld1.Value;
+            int oldSize = mainGrid.RowDefinitions.Count;
+            if (n != oldSize)
+            {
+                mainGrid.Height = n * 100;
+                mainGrid.Width = n * 100;
+                this.Height = mainGrid.Height + 140;
+                this.Width = mainGrid.Width + 8;
+                grids = new long[n, n];
+                lbls = new Label[n, n];
+                if (n > oldSize)
+                {
+                    for (int i = oldSize; i < n; i++)
+                    {
+                        mainGrid.RowDefinitions.Add(new RowDefinition());
+                        mainGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                    }
+                }
+                else
+                {
+                    mainGrid.RowDefinitions.RemoveRange(n, oldSize - n);
+                    mainGrid.ColumnDefinitions.RemoveRange(n, oldSize - n);
+                }
+            }
+            drawLB();
+            init();
+        }
     }
 
 }

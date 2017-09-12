@@ -12,4 +12,3 @@ C:\OneDrive\projects\windows\2048\WpfApp1\obj\Release\WpfApp1.csproj.GenerateRes
 C:\OneDrive\projects\windows\2048\WpfApp1\obj\Release\WpfApp1.csproj.CoreCompileInputs.cache
 C:\OneDrive\projects\windows\2048\WpfApp1\obj\Release\2048.exe
 C:\OneDrive\projects\windows\2048\WpfApp1\obj\Release\2048.pdb
-C:\OneDrive\projects\windows\2048\WpfApp1\obj\Release\WpfApp1.csprojResolveAssemblyReference.cache

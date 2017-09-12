@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="2048" ResizeMode="NoResize" Height="480.267" Width="407.6" Background="#FEFEEE">
+        Title="2048" ResizeMode="NoResize" Height="540" Width="408" Background="#FEFEEE">
 
-    <Grid x:Name="mainGrid" Height="400" Margin="0,50,0,0" 
-          HorizontalAlignment="Center" VerticalAlignment="top" Width="400" ShowGridLines="False">
+    <Grid x:Name="mainGrid" Height="400" Margin="0,0,0,0" 
+          HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="400" ShowGridLines="False">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="100"/>
@@ -27,11 +27,13 @@
                FontSize="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
                Background="Beige" Panel.ZIndex="1" Foreground="OrangeRed"/>
 
-        <Frame Grid.ColumnSpan="4" HorizontalAlignment="Left" Height="400" 
-               Grid.RowSpan="4" VerticalAlignment="Top" Width="400" Panel.ZIndex="1" BorderThickness="4" BorderBrush="BurlyWood"/>
+        <Frame x:Name="fm1" Grid.ColumnSpan="4" HorizontalAlignment="Left" 
+               Height="{Binding ElementName=mainGrid, Path=Height, UpdateSourceTrigger=PropertyChanged}"
+               Width="{Binding ElementName=mainGrid, Path=Width, UpdateSourceTrigger=PropertyChanged}" 
+               Grid.RowSpan="4" VerticalAlignment="Top" Panel.ZIndex="1" BorderThickness="4" BorderBrush="BurlyWood"/>
 
         <Label x:Name="lbl_score" Grid.ColumnSpan="2" Content="0" FontSize="15" BorderThickness="1" BorderBrush="BurlyWood"
-               Height="30" Margin="59.8,-42.6,9.2,0" VerticalAlignment="Top" VerticalContentAlignment="Center" />
+               Height="30" Margin="59.8,-42.6,9.2,0" HorizontalAlignment="Center" VerticalAlignment="Top" VerticalContentAlignment="Center" />
 
         <Label Content="Score: " FontSize="15"     VerticalContentAlignment="Center"
                Margin="3.8,-42.6,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="64" />
@@ -41,5 +43,15 @@
 
         <Label x:Name="lbl_record" Grid.ColumnSpan="2" Content="0" FontSize="15" BorderThickness="1" BorderBrush="BurlyWood"
             Height="30" Margin="63.8,-42.6,5.2,0" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Column="2" />
+
+        <Slider Name="sld1" HorizontalAlignment="Left" Margin="77.2,-88.6,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" 
+                 Width="181.6" Height="23" Minimum="4" Maximum="8" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="sld1_ValueChanged"/>
+        
+        <TextBox  Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="63.8,-88.6,0,0" TextWrapping="Wrap" 
+                  Text="{Binding ElementName=sld1, Path=Value, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="44.8"
+                  VerticalContentAlignment="Center" Grid.ColumnSpan="2"/>
+
+        <Label Content="Size: " FontSize="15"     VerticalContentAlignment="Center"
+            Margin="17.667,-93.417,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="50.133" />
     </Grid>
 </Window>
