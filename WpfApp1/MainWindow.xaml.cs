@@ -60,9 +60,6 @@ namespace WpfApp1
 
         private void OnFormPKD(object sender, KeyEventArgs e)
         {
-            if (gameStatus)
-                if (sld1.IsEnabled)
-                    sld1.IsEnabled = false;
             switch (e.Key)
             {
                 case Key.Down:
@@ -83,7 +80,6 @@ namespace WpfApp1
                     break;
                 case Key.Escape:
                     gameStatus = false;
-                    sld1.IsEnabled = true;
                     e.Handled = true;
                     init();
                     break;
@@ -132,7 +128,7 @@ namespace WpfApp1
         {
             quickPaint(x, y);
             lbls[x, y].Refresh();
-            Thread.Sleep(20);
+            Thread.Sleep(300 / n / n);
         }
 
         private void gameover()
@@ -404,6 +400,7 @@ namespace WpfApp1
 
         private void sld1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            gameStatus = false;
             n = (int)sld1.Value;
             int oldSize = mainGrid.RowDefinitions.Count;
             if (n != oldSize)
