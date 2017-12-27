@@ -12,3 +12,18 @@ C:\OneDrive\projects\windows\2048\WpfApp1\obj\Release\WpfApp1.csproj.GenerateRes
 C:\OneDrive\projects\windows\2048\WpfApp1\obj\Release\WpfApp1.csproj.CoreCompileInputs.cache
 C:\OneDrive\projects\windows\2048\WpfApp1\obj\Release\2048.exe
 C:\OneDrive\projects\windows\2048\WpfApp1\obj\Release\2048.pdb
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\bin\Release\2048.exe.config
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\bin\Release\2048.exe
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\bin\Release\2048.pdb
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\MainWindow.g.cs
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\App.g.cs
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\2048_MarkupCompile.cache
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\2048_MarkupCompile.lref
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\MainWindow.baml
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\2048.g.resources
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\WpfApp1.Properties.Resources.resources
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\WpfApp1.csproj.GenerateResource.Cache
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\WpfApp1.csproj.CoreCompileInputs.cache
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\2048.exe
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\2048.pdb
+C:\OneDrive\projects\windows\2048 simplified\WpfApp1\obj\Release\WpfApp1.csprojResolveAssemblyReference.cache

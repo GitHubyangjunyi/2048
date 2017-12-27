@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,20 +18,45 @@ namespace WpfApp1
         static private int n = 4;
         private long[,] grids = new long[n, n];
         private Label[,] lbls = new Label[n, n];
-        private int endx = 0;
-        private int endy = 0;
-        private long score = 0;
-        private long record = 0;
+        private long _score = 0;
+        private long _record = 0;
         private bool gameStatus = false;
+        private Random rnd = new Random(Guid.NewGuid().GetHashCode());
+
+        private long score
+        {
+            get
+            {
+                return _score;
+            }
+            set
+            {
+                _score = value;
+                lbl_score.Content = value.ToString();
+                if (value > record)
+                    record = value;
+            }
+        }
+
+        private long record
+        {
+            get
+            {
+                return _record;
+            }
+            set
+            {
+                _record = value;
+                lbl_record.Content = value.ToString();
+            }
+        }
         public MainWindow()
         {
             InitializeComponent();
             drawLB();
-            this.PreviewKeyDown += new KeyEventHandler(OnFormPKD);
+            PreviewKeyDown += new KeyEventHandler(OnFormPKD);
             init();
         }
-
-
 
         private void OnFormPKD(object sender, KeyEventArgs e)
         {
@@ -40,39 +66,29 @@ namespace WpfApp1
             switch (e.Key)
             {
                 case Key.Down:
-                    down();
-                    genRand();
+                    genRand(down());
                     e.Handled = true;
                     break;
                 case Key.Up:
-                    up();
-                    genRand();
+                    genRand(up());
                     e.Handled = true;
                     break;
                 case Key.Left:
-                    left();
-                    genRand();
+                    genRand(left());
                     e.Handled = true;
                     break;
                 case Key.Right:
-                    right();
-                    genRand();
+                    genRand(right());
                     e.Handled = true;
                     break;
                 case Key.Escape:
                     gameStatus = false;
-                    if (score > record)
-                    {
-                        record = score;
-                        lbl_record.Content = record.ToString();
-                    }
                     sld1.IsEnabled = true;
                     e.Handled = true;
                     init();
                     break;
             }
         }
-
 
         string[] colors = {
             "#ffffff",
@@ -87,7 +103,8 @@ namespace WpfApp1
             "#8b0000" ,
             "#333333"
         };
-        private void paint(int x, int y)
+
+        private void quickPaint(int x, int y)
         {
             if (grids[x, y] == 0)
             {
@@ -111,14 +128,16 @@ namespace WpfApp1
             }
         }
 
+        private void paint(int x, int y)
+        {
+            quickPaint(x, y);
+            lbls[x, y].Refresh();
+            Thread.Sleep(20);
+        }
+
         private void gameover()
         {
             gameStatus = false;
-            if (score > record)
-            {
-                record = score;
-                lbl_record.Content = record.ToString();
-            }
             topLabel.Visibility = Visibility.Visible;
             sld1.IsEnabled = true;
             var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
@@ -137,223 +156,225 @@ namespace WpfApp1
                 for (int j = 0; j < n; j++)
                 {
                     grids[i, j] = 0;
-                    paint(i, j);
+                    quickPaint(i, j);
                 }
             score = 0;
             gameStatus = true;
-            lbl_score.Content = score.ToString();
-            endx = 0;
-            endy = 0;
-            genRand();
-            genRand();
+            genRand(true);
+            genRand(true);
         }
 
-        private void genRand()
+        private void genRand(bool moved)
         {
             List<coord> empty = new List<coord>();
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < n; j++)
-                {
-                    if (grids[i, j] == 0)
-                        empty.Add(new coord(i, j));
-                }
-            if (empty.Count != 0)
+            for (int x = 0; x < n; x++)
+                for (int y = 0; y < n; y++)
+                    if (grids[x, y] == 0)
+                        empty.Add(new coord(x, y));
+            if (empty.Count == 0 && !moved)
+            {
+                gameover();
+                return;
+            }
+            if (moved)
             {
                 int len = empty.Count;
-                Random rnd = new Random(Guid.NewGuid().GetHashCode());
-                int num = rnd.Next(0, len);
-                grids[empty[num].x, empty[num].y] = 2;
-                paint(empty[num].x, empty[num].y);
-            }
-        }
-        private class coord
-        {
-            public int x = 0;
-            public int y = 0;
-            public coord(int a, int b)
-            {
-                x = a;
-                y = b;
+                int i = rnd.Next(0, len);
+                grids[empty[i].x, empty[i].y] = 2;
+                quickPaint(empty[i].x, empty[i].y);
             }
         }
 
-        private void down()
+        private bool down()
         {
-            int move = 0;
+            bool move = false;
             for (int x = 0; x < n; x++)
             {
-                List<long> column = new List<long>();
-                int y;
-                for (y = 0; y < n; y++)
+                for (int y = n - 1; y > 0; y--)
                 {
-                    if (grids[x, y] != 0)
+                    int y1 = y - 1;
+                    while (y1 >= 0 && grids[x, y1] == 0)
+                        y1--;
+                    if (y1 >= 0 && grids[x, y] != 0 && grids[x, y] == grids[x, y1])
                     {
-                        if (column.Count > 0 && grids[x, y] == column[column.Count - 1])
+                        moveGrid(x, y1, x, y);
+                        score += grids[x, y];
+                        move = true;
+                    }
+                }
+                for (int y = n - 1; y > 0; y--)
+                {
+                    int y1 = y - 1;
+                    while (y1 >= 0 && grids[x, y1] == 0)
+                        y1--;
+                    if (y1 >= 0)
+                    {
+                        if (grids[x, y] == 0)
                         {
-                            move = 1;
-                            column[column.Count - 1] += grids[x, y];
-                            score += column[column.Count - 1];
-                            lbl_score.Content = score.ToString();
+                            moveGrid(x, y1, x, y);
+                            move = true;
                         }
-                        else
+                        else if (y1 != y - 1)
                         {
-                            column.Add(grids[x, y]);
+                            moveGrid(x, y1, x, y - 1);
+                            move = true;
                         }
                     }
-                    else
-                        move = 1;
-                }
-                for (y = 0; y < n - column.Count; y++)
-                {
-                    grids[x, y] = 0;
-                    paint(x, y);
-                }
-                for (y = n - 1; y >= n - column.Count; y--)
-                {
-                    grids[x, y] = column[y - n + column.Count];
-                    paint(x, y);
                 }
             }
-            if (move == 0)
-            {
-                endy = 1;
-                if (endx == 1)
-                    gameover();
-            }
+            return move;
         }
-        private void up()
+        private bool up()
         {
-            int move = 0;
+            bool move = false;
             for (int x = 0; x < n; x++)
             {
-                List<long> column = new List<long>();
-                int y;
-                for (y = 0; y < n; y++)
+                for (int y = 0; y < n - 1; y++)
                 {
-                    if (grids[x, y] != 0)
+                    int y1 = y + 1;
+                    while (y1 < n && grids[x, y1] == 0)
+                        y1++;
+                    if (y1 < n && grids[x, y] != 0 && grids[x, y1] == grids[x, y])
                     {
-                        if (column.Count > 0 && grids[x, y] == column[column.Count - 1])
+                        moveGrid(x, y1, x, y);
+                        score += grids[x, y];
+                        move = true;
+                    }
+                }
+                for (int y = 0; y < n - 1; y++)
+                {
+                    int y1 = y + 1;
+                    while (y1 < n && grids[x, y1] == 0)
+                        y1++;
+                    if (y1 < n)
+                    {
+                        if (grids[x, y] == 0)
                         {
-                            move = 1;
-                            column[column.Count - 1] += grids[x, y];
-                            score += column[column.Count - 1];
-                            lbl_score.Content = score.ToString();
+                            moveGrid(x, y1, x, y);
+                            move = true;
                         }
-                        else
+                        else if (y1 != y + 1)
                         {
-                            column.Add(grids[x, y]);
+                            moveGrid(x, y1, x, y + 1);
+                            move = true;
                         }
                     }
-                    else
-                        move = 1;
-                }
-                for (y = 0; y < column.Count; y++)
-                {
-                    grids[x, y] = column[y];
-                    paint(x, y);
-                }
-                for (y = column.Count; y < n; y++)
-                {
-                    grids[x, y] = 0;
-                    paint(x, y);
                 }
             }
-            if (move == 0)
-            {
-                endy = 1;
-                if (endx == 1)
-                    gameover();
-            }
+            return move;
         }
 
-        private void right()
+        private bool right()
         {
-            int move = 0;
+            bool move = false;
             for (int y = 0; y < n; y++)
             {
-                List<long> column = new List<long>();
-                int x;
-                for (x = 0; x < n; x++)
+                for (int x = n - 1; x > 0; x--)
                 {
-                    if (grids[x, y] != 0)
+                    int x1 = x - 1;
+                    while (x1 >= 0 && grids[x1, y] == 0)
+                        x1--;
+                    if (x1 >= 0 && grids[x, y] != 0 && grids[x1, y] == grids[x, y])
                     {
-                        if (column.Count > 0 && grids[x, y] == column[column.Count - 1])
+                        moveGrid(x1, y, x, y);
+                        score += grids[x, y];
+                        move = true;
+                    }
+                }
+                for (int x = n - 1; x > 0; x--)
+                {
+                    int x1 = x - 1;
+                    while (x1 >= 0 && grids[x1, y] == 0)
+                        x1--;
+                    if (x1 >= 0)
+                    {
+                        if (grids[x, y] == 0)
                         {
-                            move = 1;
-                            column[column.Count - 1] += grids[x, y];
-                            score += column[column.Count - 1];
-                            lbl_score.Content = score.ToString();
+                            moveGrid(x1, y, x, y);
+                            move = true;
                         }
-                        else
+                        else if (x1 != x - 1)
                         {
-                            column.Add(grids[x, y]);
+                            moveGrid(x1, y, x - 1, y);
+                            move = true;
                         }
                     }
-                    else
-                        move = 1;
-                }
-                for (x = 0; x < n - column.Count; x++)
-                {
-                    grids[x, y] = 0;
-                    paint(x, y);
-                }
-                for (x = n - 1; x >= n - column.Count; x--)
-                {
-                    grids[x, y] = column[x - n + column.Count];
-                    paint(x, y);
                 }
             }
-            if (move == 0)
-            {
-                endx = 1;
-                if (endy == 1)
-                    gameover();
-            }
+            return move;
         }
 
-        private void left()
+        private bool left()
         {
-            int move = 0;
+            bool move = false;
             for (int y = 0; y < n; y++)
             {
-                List<long> column = new List<long>();
-                int x;
-                for (x = 0; x < n; x++)
+                for (int x = 0; x < n - 1; x++)
                 {
-                    if (grids[x, y] != 0)
+                    int x1 = x + 1;
+                    while (x1 < n && grids[x1, y] == 0)
+                        x1++;
+                    if (x1 < n && grids[x, y] != 0 && grids[x1, y] == grids[x, y])
                     {
-                        if (column.Count > 0 && grids[x, y] == column[column.Count - 1])
+                        moveGrid(x1, y, x, y);
+                        score += grids[x, y];
+                        move = true;
+                    }
+                }
+                for (int x = 0; x < n - 1; x++)
+                {
+                    int x1 = x + 1;
+                    while (x1 < n && grids[x1, y] == 0)
+                        x1++;
+                    if (x1 < n)
+                    {
+                        if (grids[x, y] == 0)
                         {
-                            move = 1;
-                            column[column.Count - 1] += grids[x, y];
-                            score += column[column.Count - 1];
-                            lbl_score.Content = score.ToString();
+                            moveGrid(x1, y, x, y);
+                            move = true;
                         }
-                        else
+                        else if (x1 != x + 1)
                         {
-                            column.Add(grids[x, y]);
+                            moveGrid(x1, y, x + 1, y);
+                            move = true;
                         }
                     }
-                    else
-                        move = 1;
                 }
-                for (x = 0; x < column.Count; x++)
+            }
+            return move;
+        }
+
+        //animated move effect
+        private void moveGrid(int x1, int y1, int x2, int y2)
+        {
+            if (x1 == x2 && y1 == y2)
+                return;
+            int xincre, yincre;
+            if (x2 > x1)
+                xincre = 1;
+            else if (x2 < x1)
+                xincre = -1;
+            else
+                xincre = 0;
+            if (y2 > y1)
+                yincre = 1;
+            else if (y2 < y1)
+                yincre = -1;
+            else
+                yincre = 0;
+            int x = x1, y = y1;
+            do
+            {
+                do
                 {
-                    grids[x, y] = column[x];
-                    paint(x, y);
-                }
-                for (x = column.Count; x < n; x++)
-                {
+                    grids[x + xincre, y + yincre] += grids[x, y];
                     grids[x, y] = 0;
                     paint(x, y);
-                }
-            }
-            if (move == 0)
-            {
-                endx = 1;
-                if (endy == 1)
-                    gameover();
-            }
+                    paint(x + xincre, y + yincre);
+                    y += yincre;
+                } while (y != y2);
+                x += xincre;
+            } while (x != x2);
         }
 
         private void drawLB()
@@ -412,6 +433,29 @@ namespace WpfApp1
             drawLB();
             init();
         }
+
+        private struct coord
+        {
+            public int x;
+            public int y;
+            public coord(int a, int b)
+            {
+                x = a;
+                y = b;
+            }
+            public override int GetHashCode()
+            {
+                return x << 16 + y;
+            }
+        }
     }
 
+    public static class ExtensionMethods
+    {
+        private static Action EmptyDelegate = delegate () { };
+        public static void Refresh(this UIElement uiElement)
+        {
+            uiElement.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
+        }
+    }
 }
