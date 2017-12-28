@@ -24,6 +24,7 @@ namespace WpfApp1
         private bool move = false;
         private Task[] task;
         private bool gameOn = false;
+        private Task rndRunning = null;
 
         private long score
         {
@@ -63,40 +64,50 @@ namespace WpfApp1
             init();
         }
 
+        private bool allComplete()
+        {
+            if (rndRunning != null && !rndRunning.IsCompleted)
+                return false;
+            foreach (Task t in task)
+                if (t != null && !t.IsCompleted)
+                    return false;
+            return true;
+        }
+
         //handles PreviewKeyDown event and set these keys handled
         private void OnFormPKD(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
                 case Key.Down:
-                    if (gameOn)
+                    if (gameOn && allComplete())
                     {
                         down();
-                        Task.Factory.StartNew(genRand);
+                        rndRunning = Task.Factory.StartNew(genRand);
                     }
                     e.Handled = true;
                     break;
                 case Key.Up:
-                    if (gameOn)
+                    if (gameOn && allComplete())
                     {
                         up();
-                        Task.Factory.StartNew(genRand);
+                        rndRunning = Task.Factory.StartNew(genRand);
                     }
                     e.Handled = true;
                     break;
                 case Key.Left:
-                    if (gameOn)
+                    if (gameOn && allComplete())
                     {
                         left();
-                        Task.Factory.StartNew(genRand);
+                        rndRunning = Task.Factory.StartNew(genRand);
                     }
                     e.Handled = true;
                     break;
                 case Key.Right:
-                    if (gameOn)
+                    if (gameOn && allComplete())
                     {
                         right();
-                        Task.Factory.StartNew(genRand);
+                        rndRunning = Task.Factory.StartNew(genRand);
                     }
                     e.Handled = true;
                     break;
@@ -190,6 +201,7 @@ namespace WpfApp1
                     quickPaint(i, j);
                 }
             score = 0;
+            rndRunning = null;
             task = new Task[n];
             move = true;
             //drawTestGrids();    //debug
@@ -215,11 +227,11 @@ namespace WpfApp1
             if (task[0] != null)
                 lock (task)
                     Task.WaitAll(task);
-            List<coord> empty = new List<coord>();
+            List<Coord> empty = new List<Coord>();
             for (int x = 0; x < n; x++)
                 for (int y = 0; y < n; y++)
                     if (grids[x, y] == 0)
-                        empty.Add(new coord(x, y));
+                        empty.Add(new Coord(x, y));
             if (empty.Count == 0 && !move)
             {
                 Dispatcher.BeginInvoke((Action)gameover);
@@ -465,11 +477,11 @@ namespace WpfApp1
             init();
         }
 
-        private struct coord
+        private struct Coord
         {
             public int x;
             public int y;
-            public coord(int a, int b)
+            public Coord(int a, int b)
             {
                 x = a;
                 y = b;
