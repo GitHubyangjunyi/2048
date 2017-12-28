@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,8 +21,10 @@ namespace WpfApp1
         private Label[,] lbls = new Label[n, n];
         private long _score = 0;
         private long _record = 0;
-        private bool gameStatus = false;
         private Random rnd = new Random(Guid.NewGuid().GetHashCode());
+        private bool move = false;
+        private Task[] task;
+        private bool gameOn = false;
 
         private long score
         {
@@ -63,23 +66,38 @@ namespace WpfApp1
             switch (e.Key)
             {
                 case Key.Down:
-                    genRand(down());
+                    if (gameOn)
+                    {
+                        down();
+                        Task.Factory.StartNew(genRand);
+                    }
                     e.Handled = true;
                     break;
                 case Key.Up:
-                    genRand(up());
+                    if (gameOn)
+                    {
+                        up();
+                        Task.Factory.StartNew(genRand);
+                    }
                     e.Handled = true;
                     break;
                 case Key.Left:
-                    genRand(left());
+                    if (gameOn)
+                    {
+                        left();
+                        Task.Factory.StartNew(genRand);
+                    }
                     e.Handled = true;
                     break;
                 case Key.Right:
-                    genRand(right());
+                    if (gameOn)
+                    {
+                        right();
+                        Task.Factory.StartNew(genRand);
+                    }
                     e.Handled = true;
                     break;
                 case Key.Escape:
-                    gameStatus = false;
                     e.Handled = true;
                     init();
                     break;
@@ -97,6 +115,7 @@ namespace WpfApp1
             "#9932cc" ,
             "#800080",
             "#8b0000" ,
+            "#aa0000",
             "#333333"
         };
 
@@ -109,10 +128,17 @@ namespace WpfApp1
             }
             else
             {
-                lbls[x, y].Content = grids[x, y].ToString();
+                string strNum = grids[x, y].ToString();
+                lbls[x, y].Content = strNum;
+                int fontSize;
+                if (strNum.Length > 3)
+                    fontSize = 150 / strNum.Length;
+                else
+                    fontSize = 50;
+                lbls[x, y].FontSize = fontSize;
                 int lg = (int)Math.Log(grids[x, y], 2);
-                if (lg > 10)
-                    lg = 10;
+                if (lg > 11)
+                    lg = 11;
                 var bc = new BrushConverter();
                 lbls[x, y].Background = (Brush)bc.ConvertFrom(colors[lg]);
                 Brush fore;
@@ -124,16 +150,16 @@ namespace WpfApp1
             }
         }
 
-        private void paint(int x, int y)
+        private async Task paint(int x, int y)
         {
             quickPaint(x, y);
             lbls[x, y].Refresh();
-            Thread.Sleep(300 / n / n);
+            await Task.Delay(50 / n);
         }
 
         private void gameover()
         {
-            gameStatus = false;
+            gameOn = false;
             topLabel.Visibility = Visibility.Visible;
             sld1.IsEnabled = true;
             var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
@@ -141,7 +167,8 @@ namespace WpfApp1
             timer.Tick += (sender, args) =>
             {
                 timer.Stop();
-                init();
+                if (!gameOn)
+                    init();
             };
         }
 
@@ -155,193 +182,190 @@ namespace WpfApp1
                     quickPaint(i, j);
                 }
             score = 0;
-            gameStatus = true;
-            genRand(true);
-            genRand(true);
+            task = new Task[n];
+            move = true;
+            //drawTestGrids();    //debug
+            genRand();
+            genRand();
+            gameOn = true;
         }
 
-        private void genRand(bool moved)
+        //For debug only
+        private void drawTestGrids()
         {
+            grids[0, 0] = 64;
+            quickPaint(0, 0);
+            grids[0, 1] = 128;
+            quickPaint(0, 1);
+            grids[0, 2] = 1024;
+            quickPaint(0, 2);
+        }
+
+        private void genRand()
+        {
+            if (task[0] != null)
+                lock (task)
+                    Task.WaitAll(task);
             List<coord> empty = new List<coord>();
             for (int x = 0; x < n; x++)
                 for (int y = 0; y < n; y++)
                     if (grids[x, y] == 0)
                         empty.Add(new coord(x, y));
-            if (empty.Count == 0 && !moved)
+            if (empty.Count == 0 && !move)
             {
-                gameover();
+                Dispatcher.BeginInvoke((Action)gameover);
                 return;
             }
-            if (moved)
+            if (empty.Count != 0 && move)
             {
                 int len = empty.Count;
                 int i = rnd.Next(0, len);
-                grids[empty[i].x, empty[i].y] = 2;
-                quickPaint(empty[i].x, empty[i].y);
+                lock (grids)
+                    grids[empty[i].x, empty[i].y] = 2;
+                Dispatcher.BeginInvoke((Action)(() => quickPaint(empty[i].x, empty[i].y)));
             }
         }
 
-        private bool down()
+        private void down()
         {
-            bool move = false;
+            move = false;
             for (int x = 0; x < n; x++)
-            {
-                for (int y = n - 1; y > 0; y--)
-                {
-                    int y1 = y - 1;
-                    while (y1 >= 0 && grids[x, y1] == 0)
-                        y1--;
-                    if (y1 >= 0 && grids[x, y] != 0 && grids[x, y] == grids[x, y1])
-                    {
-                        moveGrid(x, y1, x, y);
-                        score += grids[x, y];
-                        move = true;
-                    }
-                }
-                for (int y = n - 1; y > 0; y--)
-                {
-                    int y1 = y - 1;
-                    while (y1 >= 0 && grids[x, y1] == 0)
-                        y1--;
-                    if (y1 >= 0)
-                    {
-                        if (grids[x, y] == 0)
-                        {
-                            moveGrid(x, y1, x, y);
-                            move = true;
-                        }
-                        else if (y1 != y - 1)
-                        {
-                            moveGrid(x, y1, x, y - 1);
-                            move = true;
-                        }
-                    }
-                }
-            }
-            return move;
+                task[x] = _down(x);
         }
-        private bool up()
+        private void up()
         {
-            bool move = false;
+            move = false;
             for (int x = 0; x < n; x++)
-            {
-                for (int y = 0; y < n - 1; y++)
-                {
-                    int y1 = y + 1;
-                    while (y1 < n && grids[x, y1] == 0)
-                        y1++;
-                    if (y1 < n && grids[x, y] != 0 && grids[x, y1] == grids[x, y])
-                    {
-                        moveGrid(x, y1, x, y);
-                        score += grids[x, y];
-                        move = true;
-                    }
-                }
-                for (int y = 0; y < n - 1; y++)
-                {
-                    int y1 = y + 1;
-                    while (y1 < n && grids[x, y1] == 0)
-                        y1++;
-                    if (y1 < n)
-                    {
-                        if (grids[x, y] == 0)
-                        {
-                            moveGrid(x, y1, x, y);
-                            move = true;
-                        }
-                        else if (y1 != y + 1)
-                        {
-                            moveGrid(x, y1, x, y + 1);
-                            move = true;
-                        }
-                    }
-                }
-            }
-            return move;
+                task[x] = _up(x);
+        }
+        private void right()
+        {
+            move = false;
+            for (int y = 0; y < n; y++)
+                task[y] = _right(y);
+        }
+        private void left()
+        {
+            move = false;
+            for (int y = 0; y < n; y++)
+                task[y] = _left(y);
         }
 
-        private bool right()
+        private async Task _down(int x)
         {
-            bool move = false;
-            for (int y = 0; y < n; y++)
+            for (int y = n - 1; y > 0; y--)
             {
-                for (int x = n - 1; x > 0; x--)
+                int y1 = y - 1;
+                while (y1 >= 0 && grids[x, y1] == 0)
+                    y1--;
+                if (y1 >= 0 && grids[x, y] != 0 && grids[x, y] == grids[x, y1])
                 {
-                    int x1 = x - 1;
-                    while (x1 >= 0 && grids[x1, y] == 0)
-                        x1--;
-                    if (x1 >= 0 && grids[x, y] != 0 && grids[x1, y] == grids[x, y])
-                    {
-                        moveGrid(x1, y, x, y);
-                        score += grids[x, y];
-                        move = true;
-                    }
-                }
-                for (int x = n - 1; x > 0; x--)
-                {
-                    int x1 = x - 1;
-                    while (x1 >= 0 && grids[x1, y] == 0)
-                        x1--;
-                    if (x1 >= 0)
-                    {
-                        if (grids[x, y] == 0)
-                        {
-                            moveGrid(x1, y, x, y);
-                            move = true;
-                        }
-                        else if (x1 != x - 1)
-                        {
-                            moveGrid(x1, y, x - 1, y);
-                            move = true;
-                        }
-                    }
+                    await moveGrid(x, y1, x, y);
+                    score += grids[x, y];
                 }
             }
-            return move;
+            for (int y = n - 1; y > 0; y--)
+            {
+                int y1 = y - 1;
+                while (y1 >= 0 && grids[x, y1] == 0)
+                    y1--;
+                if (y1 >= 0)
+                {
+                    if (grids[x, y] == 0)
+                        await moveGrid(x, y1, x, y);
+                    else if (y1 != y - 1)
+                        await moveGrid(x, y1, x, y - 1);
+                }
+            }
         }
 
-        private bool left()
+        private async Task _up(int x)
         {
-            bool move = false;
-            for (int y = 0; y < n; y++)
+            for (int y = 0; y < n - 1; y++)
             {
-                for (int x = 0; x < n - 1; x++)
+                int y1 = y + 1;
+                while (y1 < n && grids[x, y1] == 0)
+                    y1++;
+                if (y1 < n && grids[x, y] != 0 && grids[x, y] == grids[x, y1])
                 {
-                    int x1 = x + 1;
-                    while (x1 < n && grids[x1, y] == 0)
-                        x1++;
-                    if (x1 < n && grids[x, y] != 0 && grids[x1, y] == grids[x, y])
-                    {
-                        moveGrid(x1, y, x, y);
-                        score += grids[x, y];
-                        move = true;
-                    }
-                }
-                for (int x = 0; x < n - 1; x++)
-                {
-                    int x1 = x + 1;
-                    while (x1 < n && grids[x1, y] == 0)
-                        x1++;
-                    if (x1 < n)
-                    {
-                        if (grids[x, y] == 0)
-                        {
-                            moveGrid(x1, y, x, y);
-                            move = true;
-                        }
-                        else if (x1 != x + 1)
-                        {
-                            moveGrid(x1, y, x + 1, y);
-                            move = true;
-                        }
-                    }
+                    await moveGrid(x, y1, x, y);
+                    score += grids[x, y];
                 }
             }
-            return move;
+            for (int y = 0; y < n - 1; y++)
+            {
+                int y1 = y + 1;
+                while (y1 < n && grids[x, y1] == 0)
+                    y1++;
+                if (y1 < n)
+                {
+                    if (grids[x, y] == 0)
+                        await moveGrid(x, y1, x, y);
+                    else if (y1 != y + 1)
+                        await moveGrid(x, y1, x, y + 1);
+                }
+            }
         }
+
+        private async Task _right(int y)
+        {
+            for (int x = n - 1; x > 0; x--)
+            {
+                int x1 = x - 1;
+                while (x1 >= 0 && grids[x1, y] == 0)
+                    x1--;
+                if (x1 >= 0 && grids[x, y] != 0 && grids[x1, y] == grids[x, y])
+                {
+                    await moveGrid(x1, y, x, y);
+                    score += grids[x, y];
+                }
+            }
+            for (int x = n - 1; x > 0; x--)
+            {
+                int x1 = x - 1;
+                while (x1 >= 0 && grids[x1, y] == 0)
+                    x1--;
+                if (x1 >= 0)
+                {
+                    if (grids[x, y] == 0)
+                        await moveGrid(x1, y, x, y);
+                    else if (x1 != x - 1)
+                        await moveGrid(x1, y, x - 1, y);
+                }
+            }
+        }
+
+        private async Task _left(int y)
+        {
+            for (int x = 0; x < n - 1; x++)
+            {
+                int x1 = x + 1;
+                while (x1 < n && grids[x1, y] == 0)
+                    x1++;
+                if (x1 < n && grids[x, y] != 0 && grids[x1, y] == grids[x, y])
+                {
+                    await moveGrid(x1, y, x, y);
+                    score += grids[x, y];
+                }
+            }
+            for (int x = 0; x < n - 1; x++)
+            {
+                int x1 = x + 1;
+                while (x1 < n && grids[x1, y] == 0)
+                    x1++;
+                if (x1 < n)
+                {
+                    if (grids[x, y] == 0)
+                        await moveGrid(x1, y, x, y);
+                    else if (x1 != x + 1)
+                        await moveGrid(x1, y, x + 1, y);
+                }
+            }
+        }
+
 
         //animated move effect
-        private void moveGrid(int x1, int y1, int x2, int y2)
+        private async Task moveGrid(int x1, int y1, int x2, int y2)
         {
             if (x1 == x2 && y1 == y2)
                 return;
@@ -365,9 +389,10 @@ namespace WpfApp1
                 {
                     grids[x + xincre, y + yincre] += grids[x, y];
                     grids[x, y] = 0;
-                    paint(x, y);
-                    paint(x + xincre, y + yincre);
+                    await paint(x, y);
+                    await paint(x + xincre, y + yincre);
                     y += yincre;
+                    move = true;
                 } while (y != y2);
                 x += xincre;
             } while (x != x2);
@@ -400,7 +425,6 @@ namespace WpfApp1
 
         private void sld1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            gameStatus = false;
             n = (int)sld1.Value;
             int oldSize = mainGrid.RowDefinitions.Count;
             if (n != oldSize)

@@ -44,15 +44,15 @@
         <Label x:Name="lbl_record" Grid.ColumnSpan="2" Content="0" FontSize="15" BorderThickness="1" BorderBrush="BurlyWood"
             Height="30" Margin="63.8,-42.6,5.2,0" VerticalAlignment="Top" VerticalContentAlignment="Center" Grid.Column="2" />
 
-        <Slider Name="sld1" HorizontalAlignment="Left" Margin="62,-88.6,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" 
-                 Width="136.8" Height="23" Minimum="4" Maximum="8" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="sld1_ValueChanged"/>
+        <Slider Name="sld1" HorizontalAlignment="Left" Margin="90,-89,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" 
+                 Width="132" Height="23" Minimum="4" Maximum="8" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="sld1_ValueChanged" Focusable="False"/>
 
-        <TextBox  Grid.Column="2" HorizontalAlignment="Left" Height="27.817" Margin="3.8,-93.417,0,0" TextWrapping="Wrap" 
+        <TextBox  Grid.Column="2" HorizontalAlignment="Left" Height="28" Margin="17,-93,0,0" TextWrapping="Wrap" 
                   Text="{Binding ElementName=sld1, Path=Value, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="20"
                   VerticalContentAlignment="Center" RenderTransformOrigin="-1.387,0.626"/>
 
-        <Label Content="Size: " FontSize="15"     VerticalContentAlignment="Center"
-            Margin="17.667,-93.417,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="50.133" />
+        <Label Content="Board size: " FontSize="15"     VerticalContentAlignment="Center"
+            Margin="4,-93,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="81" />
         <Label Content="To restart: Press Esc" Grid.Column="2" HorizontalAlignment="Left" Margin="73.933,-93.417,0,0" VerticalAlignment="Top" Width="113.6" Height="30.4" Grid.ColumnSpan="2"/>
     </Grid>
 </Window>
