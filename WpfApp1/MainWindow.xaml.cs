@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,6 +40,7 @@ namespace WpfApp1
             }
         }
 
+        //record score
         private long record
         {
             get
@@ -53,6 +53,8 @@ namespace WpfApp1
                 lbl_record.Content = value.ToString();
             }
         }
+
+        //default initializer
         public MainWindow()
         {
             InitializeComponent();
@@ -61,6 +63,7 @@ namespace WpfApp1
             init();
         }
 
+        //handles PreviewKeyDown event and set these keys handled
         private void OnFormPKD(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -104,6 +107,7 @@ namespace WpfApp1
             }
         }
 
+        //candidate colors for the blocks
         string[] colors = {
             "#ffffff",
             "#ffff00",
@@ -119,6 +123,7 @@ namespace WpfApp1
             "#333333"
         };
 
+        //direct version of paint with no delay
         private void quickPaint(int x, int y)
         {
             if (grids[x, y] == 0)
@@ -150,13 +155,15 @@ namespace WpfApp1
             }
         }
 
+        //async version of paint with a delay to allow animation
         private async Task paint(int x, int y)
         {
             quickPaint(x, y);
-            lbls[x, y].Refresh();
-            await Task.Delay(50 / n);
+            lbls[x, y].UpdateLayout();
+            await Task.Delay(120 / n);
         }
 
+        //handles gameover, resets status
         private void gameover()
         {
             gameOn = false;
@@ -172,6 +179,7 @@ namespace WpfApp1
             };
         }
 
+        //initialize game
         private void init()
         {
             topLabel.Visibility = Visibility.Hidden;
@@ -201,6 +209,7 @@ namespace WpfApp1
             quickPaint(0, 2);
         }
 
+        //generate a block at a random position
         private void genRand()
         {
             if (task[0] != null)
@@ -429,6 +438,7 @@ namespace WpfApp1
             int oldSize = mainGrid.RowDefinitions.Count;
             if (n != oldSize)
             {
+                record = 0;
                 mainGrid.Height = n * 100;
                 mainGrid.Width = n * 100;
                 this.Height = mainGrid.Height + 145;
@@ -468,15 +478,6 @@ namespace WpfApp1
             {
                 return x << 16 + y;
             }
-        }
-    }
-
-    public static class ExtensionMethods
-    {
-        private static Action EmptyDelegate = delegate () { };
-        public static void Refresh(this UIElement uiElement)
-        {
-            uiElement.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
         }
     }
 }
